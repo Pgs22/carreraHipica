@@ -25,15 +25,15 @@ public class Carrerahipica {
                 System.out.println("Escribe el numero de participantes: ");
             }
             int validarParticipantes = scan.nextInt();
-            if(participantes < 2 || participantes > 8){
+            if(validarParticipantes < 2 || validarParticipantes > 8){
                 System.out.println("Error: Fuera de rango. El numero de participantes debe ser entre 2 y 8");
                 System.out.println("Vuelve a intentarlo");
                 scan.nextLine();
-                break;
-            } else if (participantes > 2 || participantes < 8){
+            } else if (validarParticipantes >= 2 || validarParticipantes <= 8){
                 System.out.println("OK");
                 participantes = validarParticipantes;
                 validar = true;
+                return participantes;
             }
         }while(!validar);
         return participantes;
@@ -42,10 +42,10 @@ public class Carrerahipica {
     public static int elegirCaballo(int participantes, Scanner scan){
         //partipantes tiene el numero de caballos que habran en la carrera
         boolean validar = false;
-        int caballo = -1;
+        int caballo = participantes;
         do{
             System.out.println("Apuesta que caballo ganara (caballos disponibles desde 0 a " 
-                    + (participantes-1) + "): "); //Le resto el numero del participante 0        
+                    + (participantes) + "): "); //Le resto el numero del participante 0        
             while(!scan.hasNextInt()){
                 System.out.println("Error: introduce un numero entero");
                 scan.next();
@@ -57,7 +57,7 @@ public class Carrerahipica {
                 System.out.println("Vuelve a intentarlo");
                 scan.nextLine();
                 break;
-            } else if (caballo > 0 || caballo < participantes){
+            } else if (caballo >= 0 || caballo <= participantes){
                 System.out.println("OK");
                 validar = true;
             }
@@ -68,19 +68,19 @@ public class Carrerahipica {
     public static void iniciarHipodromo(char[][] m){
         System.out.println("****Preparamos la pista para la carrera!****");
         for(int i = 0; i < m.length; i++){
-            for(int j = 0; j < m.length; j++){
+            for(int j = 0; j < m[i].length; j++){
                 m[i][j] = '.';
             }
         }
-        mostrarHipodromo(m);
     }
     
     public static void mostrarHipodromo(char [][] hipodromo){
         for(int i = 0; i < hipodromo.length; i++){
-            System.out.println("[" + i + "]");
+            System.out.print("[" + i + "]");
             for(int j = 0; j < hipodromo[i].length; j++){
-                System.out.println(hipodromo[i][j] + " ");
+                System.out.print(hipodromo[i][j] + " ");
             }
+            System.out.println();
         }
         System.out.println();
     }
@@ -92,29 +92,38 @@ public class Carrerahipica {
         // int turno iniciado en main =>0 (Representa la fila del hipodromo)
         // y irá incrementando en el main
         System.out.println("Turno para el caballo: " + turno);
+        boolean turnoCompletado = false;
+        
         do{
             //Simulacion de un dado para avanzar
             int avanza = random.nextInt(1, 6);   
 
-            System.out.println("El caballo avanzará " + avanza + " posiciones "
-                + "desde la posición ...");
+            System.out.println("El caballo avanza " + avanza + " posiciones "
+                + "desde la posicion ...");
 
             //Buscamos posición del caballo para cada turno
-            for (int i = turno; i < turno; i++) {
-                for (int j = 0; j < hipodromo[i].length -1 ; j++) { 
+            for (int i = 0; i < 1 + 1; i++) {
+                for (int j = 0; j < hipodromo[i].length ; j++) { 
                     if (hipodromo[i][j] == '.') {
-                        int posicion = j -1;
-                        System.out.println("Posicion [" + i + "," + posicion + "]");
+                        int posicion = j;
+                        System.out.println("Esta en la posicion " + i + "," + posicion + "]");
                         int mover = posicion + avanza;
-                        for (int k = posicion; k < mover; k++) {
-                                hipodromo[i][k] = '#';
-                                k++;
+                        System.out.println("Avanza a la posicion [" + i + "," + avanza + "]");
+                        if(posicion!=0){
+                            posicion--;
                         }
-                        mostrarHipodromo(hipodromo);
+                        for (int k = posicion; k < mover; k++) {
+                                hipodromo[i][j] = '#';
+                                j++;
+                        }
                     }
-                }       
+                    mostrarHipodromo(hipodromo);
+                }
+                
             }
-        }while(true);
+            turnoCompletado = true;
+        }while(!turnoCompletado);
+        return turno;
     }
 
     public static void main(String[] args) { 
@@ -125,6 +134,7 @@ public class Carrerahipica {
         int apuesta = elegirCaballo(participantes, scan);
         hipodromo = new char[participantes][50];
         iniciarHipodromo(hipodromo);
+        mostrarHipodromo(hipodromo);
         while (avanzarCaballo(hipodromo, turno) < 50)
             {
                 if (turno < participantes - 1)
