@@ -4,6 +4,9 @@
 
 package r2.carrerahipica;
 
+import java.util.Random;
+import java.util.Scanner;
+
 /**
  *
  * @author PatriciaGomezSelles
@@ -11,12 +14,53 @@ package r2.carrerahipica;
 
 public class Carrerahipica {
     
-    public static void cantidadParticipantes(){
-        
+    public static int cantidadParticipantes(Scanner scan){
+        boolean validar = false;
+        int participantes = 0;
+        do{
+            System.out.println("Escribe el numero de participantes: ");        
+            while(!scan.hasNextInt()){
+                System.out.println("Error: introduce un numero entero");
+                scan.next();
+                System.out.println("Escribe el numero de participantes: ");
+            }
+            participantes = scan.nextInt();
+            if(participantes < 2 || participantes > 8){
+                System.out.println("Error: Fuera de rango. El numero de participantes debe ser entre 2 y 8");
+                System.out.println("Vuelve a intentarlo");
+                scan.nextLine();
+                break;
+            } else if (participantes > 2 || participantes < 8){
+                System.out.println("OK");
+                validar = true;
+            }
+        }while(!validar);
+        return participantes;
     }
     
-    public static void elegirCaballo(char[][] m){
-
+    public static int elegirCaballo(int participantes, Scanner scan){
+        boolean validar = false;
+        int caballo = 0;
+        do{
+            System.out.println("Apuesta que caballo ganara (caballos disponibles desde 0 a " 
+                    + participantes + "): ");        
+            while(!scan.hasNextInt()){
+                System.out.println("Error: introduce un numero entero");
+                scan.next();
+                System.out.println("Escribe el numero de participantes: ");
+            }
+            caballo = scan.nextInt();
+            if(caballo < 0 || caballo > participantes){
+                System.out.println("Error: Fuera de rango. El caballo no participa en la carrera.");
+                System.out.println("Vuelve a intentarlo");
+                scan.nextLine();
+                break;
+            } else if (caballo > 0 || caballo < participantes){
+                System.out.println("OK");
+                validar = true;
+            }
+        }while(!validar);
+        return caballo;
     }
     
     public static void iniciarHipodromo(char[][] m){
@@ -37,16 +81,29 @@ public class Carrerahipica {
         System.out.println();
     }
     
-    public static void avanzarCaballo(){
+    public static int avanzarCaballo(char[][] hipodromo, int turno){
+        System.out.println("El turno es para: ");
+        Random random = new Random();
+        int avanza = random.nextInt(1, 6);
+        // actualizar el hipodromo con el turno y avanza
+        // turno=1, inicial, 
+         
         
+                
+               
+                
+                
+        return turno;
     }
 
-    public static void main(String[] args) { int turno = 0;
+    public static void main(String[] args) { 
+        Scanner scan = new Scanner(System.in);
+        int turno = 0;
         char[][] hipodromo;
-//        int participantes = cantidadParticipantes();
-//        int apuesta = elegirCaballo (participantes);
-//        hipodromo= new char[participantes][50];
-//        iniciarHipodromo (hipodromo);
+        int participantes = cantidadParticipantes(scan);
+        int apuesta = elegirCaballo (participantes, scan);
+        hipodromo = new char[participantes][50];
+        iniciarHipodromo (hipodromo);
 //        while (avanzar Caballo (hipodromo, turno) < 50)
 //            {
 //                if (turno participantes 1)
