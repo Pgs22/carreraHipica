@@ -25,11 +25,11 @@ public class Carrerahipica {
                 System.out.println("Escribe el numero de participantes: ");
             }
             int validarParticipantes = scan.nextInt();
-            if(validarParticipantes < 2 && validarParticipantes > 8){
+            if(validarParticipantes < 2 || validarParticipantes > 8){
                 System.out.println("Error: Fuera de rango. El numero de participantes debe ser entre 2 y 8");
                 System.out.println("Vuelve a intentarlo");
                 scan.nextLine();
-            } else if (validarParticipantes >= 2 && validarParticipantes <= 8){
+            } else if (validarParticipantes >= 2 || validarParticipantes <= 8){
                 System.out.println("OK");
                 participantes = validarParticipantes;
                 validar = true;
@@ -52,11 +52,11 @@ public class Carrerahipica {
                 System.out.println("Escribe el numero de participantes: ");
             }
             caballo = scan.nextInt();
-            if(caballo < 0 && caballo > participantes){
+            if(caballo < 0 || caballo > participantes){
                 System.out.println("Error: Fuera de rango. El caballo no participa en la carrera.");
                 System.out.println("Vuelve a intentarlo");
                 scan.nextLine();
-            } else if (caballo >= 0 && caballo <= participantes){
+            } else if (caballo >= 0 || caballo <= participantes){
                 System.out.println("OK");
                 validar = true;
             }
@@ -71,6 +71,7 @@ public class Carrerahipica {
                 m[i][j] = '.';
             }
         }
+        System.out.println("EMPIEZA LA CARRERA!!");
     }
     
     public static void mostrarHipodromo(char [][] hipodromo){
@@ -85,74 +86,58 @@ public class Carrerahipica {
     }
     
     public static int avanzarCaballo(char[][] hipodromo, int turno) {
-        System.out.println("EMPIEZA LA CARRERA!!");
+        
         Random random = new Random();
-        // actualizar el hipodromo según avanza cada caballo
-        // int turno iniciado en main =>0 (Representa la fila del hipodromo)
-        // y irá incrementando en el main
+        
         System.out.println("Turno para el caballo: " + turno);
-        boolean turnoCompletado = false;
-
-        //Simulacion de un dado para avanzar
-        int dado = random.nextInt(1, 6);
-
-        System.out.println("El caballo avanza " + dado + " posiciones "
-                + "desde la posicion ...");
-
-        /*
-            - Buscamos posición del caballo para cada turno
-            @primeraVuelta - Si no es la primera vuelta tenemos que restar uno al movimiento
-              porque el Array cuenta desde la posicion 0
-            @resultado - Controlar si el dado da un numero mayor que posiciones libres
-              para que no de error y pueda completar la carrera
-         */
-        boolean primeraVuelta = true;
-
-        for (int i = turno; i < hipodromo.length; i++) {
-            for (int j = 0; j < hipodromo[i].length; j++) {
-                if (hipodromo[i][j] == '.') {
-
-                    //Comprobamos si es la primera vuelta
-                    int posicion = j;
-                    if (posicion != 0) {
-                        primeraVuelta = false;
-                    }
-
-                    //Sumanos posicion inicial mas el dado, para mover a la posicion final
-                    int posicionFinal = posicion + dado;
-
-                    //Si no es la primera vuelta, restamos uno a la posicionFinal
-                    if (!primeraVuelta) {
-                        posicionFinal--;
-                    }
-
-                    /*Si posicionFinal es mayor a las posiciones existentes, restamos las sobrantes
-                          Nuevo valor al dado @avanza y recalculamos posicionFinal
-                          Ha llegado a la meta!
-                     */
-                    if (posicionFinal > hipodromo[turno].length) {
-                        int avanza = hipodromo[turno].length - posicionFinal;
-                        posicionFinal = posicion + avanza;
-                    }
-
-                    //Imprimimos las posiciones y proceso
-                    System.out.println("Esta en la posicion " + i + "," + posicion + "]");
-                    System.out.println("El dado nos permite avanzar: " + dado);
-                    System.out.println("Calculamos las posiciones que podemos avanzar..");
-                    System.out.println("Avanza a la posicion [" + i + "," + posicionFinal + "]");
-
-                    //Movemos
-                    for (int k = j; k < posicionFinal; k++) {
-                        hipodromo[i][j] = '#';
-                        j++;
-                    }
-                }
-                mostrarHipodromo(hipodromo);
+        int longitudPista = hipodromo[turno].length;
+        int posicionInicial = -1;
+        
+        //Buscamos la posición del caballo, se detendrá cuando no encuentre #
+        //en cada vuelta nos actualiza la posicion, nos quedaremos con la ultima
+        //si no encuentra caballo, salimos del bucle
+        for(int i = 0; i < longitudPista; i++){
+            if(hipodromo[turno][i] == '#'){
+                posicionInicial = i;
+            }else{
+                break;
             }
-
         }
-        turno++;
-        return turno;
+        
+        //POSICION A DEVOLVER esperada en el main si hay ganador (50)
+        int devolverPosicion;
+        
+        //Avanzamos segun el dado rellenando posiciones avanzadas
+        int dado = random.nextInt(1,7); //el maximo sera excluido. Obtenemos (de 1 a 6)
+        int posicionFinal = posicionInicial + dado;
+        
+        //Nos aseguramos que no se salga de la pista, restamos 1 por el indice desde 0
+        if(posicionFinal >= longitudPista){
+            posicionFinal = longitudPista -1;
+            devolverPosicion = longitudPista;
+        } else{
+            devolverPosicion = posicionFinal;
+        }
+        
+        /* Validar primera posición a rellenar
+        - Si la posicionInicial es -1 es que acaba de empezar la carrera
+          lo situamos en la posicion 0
+        - Sino, es que estamos en la ultima posicion del caballo
+          por lo que tenemos que avanzar a la primera posicion a rellenar
+        */
+        if(posicionInicial == -1){
+            posicionInicial = 0;
+        } else {
+            posicionInicial += 1;
+        }
+        
+        for(int j = posicionInicial; j <= posicionFinal; j++){
+            hipodromo[turno][j] = '#';
+        }
+        //Mostramos resultado el turno ejecutado
+        mostrarHipodromo(hipodromo);
+        //Devolvemos la posicion actual del caballo al cabar el turno
+        return devolverPosicion;
     }
 
     public static void main(String[] args) { 
@@ -163,7 +148,6 @@ public class Carrerahipica {
         int apuesta = elegirCaballo(participantes, scan);
         hipodromo = new char[participantes][50];
         iniciarHipodromo(hipodromo);
-        mostrarHipodromo(hipodromo);
         while (avanzarCaballo(hipodromo, turno) < 50)
             {
                 if (turno < participantes - 1)
